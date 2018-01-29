@@ -1,0 +1,53 @@
+ok:
+  - OK
+  - Of course
+  - At once
+
+sorry:
+  - Sorry
+  - My apologies
+  - Forgive me
+
+yes:
+  - Yes
+
+no:
+  - No
+
+# entity, entity type, state
+turn_on_or_off:
+  - OK, turning the {} {} {}
+  - I can definitely turn the {} {} {}
+  - The {} {} shall be turned {} immediately
+
+# entity, entity_type, state
+already_state:
+  - The {} {} is already {}
+  - Why? the {} {} is already {}
+
+# entity, entity type
+not_found:
+  - Sorry, I couldn't find the {} {}
+  - There is no {} {}
+  - As soon as you get a {} {}, I can do that
+
+# entity type
+unknown_entity:
+  - Sorry, I didn't understand which {} you wanted
+  - Where is the {}?
+
+greeting:
+  - Hello {}, welcome home
+
+intent_not_recognized:
+  - Sorry, I didn't understand that
+  - Could you repeat that?
+
+joke:
+  - <break time="1s"/>I am stuck here in America, that's a joke right?
+    <break time="1s"/><prosody rate="x-slow" pitch="low">sigh</prosody>
+  - What does an owl in england watch? <break time="2s"/> Doctor hoot
+  - Did you hear about the winner in the English Best Teeth contest? <break time="2s"/> Me either
+  - Why did the siamese twins move to England? <break time="2s"/> So the other one could drive!
+  - England doesn't have a kidney bank, but it does have a liverpool
+  - What time was it when the monster ate the british prime minister?<break time="1s"/>Eight P.M.
