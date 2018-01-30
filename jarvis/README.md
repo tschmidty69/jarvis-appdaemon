@@ -27,6 +27,7 @@ should work.
 
 ### Installation
 
+- Install Home Assistiant
 - Install Snips
 - Install Appdaemon V3
 - Install this app in your apps folder (git clone the repo)
@@ -45,17 +46,17 @@ in English at this point.
 Create your assistant and add these bundles
 
 #### Snips
-Smart Lights
-Weather
-*Music Player* (I prefer mine since I got a lot of false positives from play and pause)
+- Smart Lights
+- Weather
+- *Music Player* (I prefer mine since I got a lot of false positives from play and pause)
 
 #### AcidFlow
-Timers - En
+- Timers - En
 
 #### TSchmidty
-TV Controls
-Music Player (If not using the official Snips Bundle)
-Thermostat
+- TV Controls
+- Music Player (If not using the official Snips Bundle)
+- Thermostat
 
 For my music bundle, I generated a large list of Artists for the slots to help with artist matching, which
 is working well for me.
