@@ -13,6 +13,8 @@ It is mainly intended for use with Home Assistant at this point, but plans are t
 One of my big motiviatons is to provide Multi Language and Multi Assistant support from the start so you can 
 choose or edit a speech file and have appropriate responses and have an assistant that matches your character. 
 
+Look at jarvis/data/jarvis_en.yaml for a basic idea of what I am going for.
+
 Snips themselves are working on expanding their language support, and I will try to keep up with that. If their
 snipsmanager and snips skills get to a mature/stable state I'd love to incorporate them as well to avoid duplication
 of effort and increase the capabilities.
