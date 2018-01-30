@@ -5,10 +5,10 @@ jarvis_core:
   snips_mqtt_host: 'YOUR_SNIPS_MQTT_IP'
   snips_mqtt_port: 1883
 
-  # speechss
+  # File containing speech to language mappings
   speech_file: '/data/jarvis_en.yaml'
 
-  #media players
+  # media players
   # these are mapped to siteIds in snips
   # to mute players in a specific room only
   ramp_volume_on_hotword: true
@@ -16,6 +16,9 @@ jarvis_core:
     default: media_player.media_player
     bonus: media_player.media_player
     remote: media_player.media_player
+  speech_on_not_implemented: true
+
+# specific apps
 
 jarvis_weather:
   module: jarvis_weather
@@ -23,12 +26,13 @@ jarvis_weather:
   dependencies: jarvis_core
   enabled: False
 
-jarvis_music:
-  module: jarvis_music
-  class: jarvis_music
+jarvis_mopidy:
+  module: jarvis_mopidy
+  class: jarvis_mopidy
   dependencies: jarvis_core
-  enabled: False
-  mopidy_host: 'YOUR_MOPIDY_HOST'
+  enabled: True
+  host: 'YOUR_MOPIDY_HOST'
+
 
 jarvis_lights:
   module: jarvis_lights
@@ -51,7 +55,7 @@ jarvis_thermostat:
   module: jarvis_thermostat
   class: jarvis_thermostat
   dependencies: jarvis_core
-  enabled: False
+  enabled: True
   thermostat:
     heat:
       downstairs: thermostat_1
@@ -60,14 +64,15 @@ jarvis_thermostat:
       downstairs: thermostat_1
       upstairs: thermostat_1_2
 
-jarvis_roku_tv:
-  module: jarvis_roku_tv
-  class: jarvis_roku_tv
+jarvis_tv:
+  module: jarvis_tv
+  class: jarvis_tv
   dependencies: jarvis_core
   enabled: False
-  roku:
-    living_room: 'ip_of_roku_1'
-    master_bedroom: 'ip_of_roku_2'
+  tv:
+    roku:
+      living_room: 'ip_of_roku_1'
+      master_bedroom: 'ip_of_roku_2'
 
 jarvis_ask_wolfram:
   module: jarvis_ask_wolfram

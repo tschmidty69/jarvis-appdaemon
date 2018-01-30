@@ -82,7 +82,7 @@ class jarvis_core(hass.Hass):
                            self.jarvis_get_speech('intent_not_recognized')})
 
     def jarvis_notify(self, data, *args, **kwargs):
-        self.log("__function__: %s" % data, 'DEBUG')
+        self.log("__function__: %s" % data, 'INFO')
         payload={'siteId': data.get('siteId', self.siteId),
                  'init': {'type': 'notification',
                           'text': data.get('text', '')}}
@@ -205,3 +205,10 @@ class jarvis_core(hass.Hass):
             self.call_service("media_player/volume_set",
               entity_id = player,
               volume_level = str(volume - step * count))
+
+    def jarvis_not_implemented(self, data, *args, **kwargs):
+        self.log("__function__: %s" %data, 'INFO')
+        if self.arg.get('speech_on_not_implemented'):
+            self.jarvis_notify('NONE', {'text':
+                self.jarvis_get_speech('sorry') + ', '
+                + self.jarvis_get_speech('cant_do_yet')})

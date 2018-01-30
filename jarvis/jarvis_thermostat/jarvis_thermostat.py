@@ -20,7 +20,8 @@ class jarvis_thermostat(hass.Hass):
         if not self.args.get('enabled'):
             return
         self.jarvis = self.get_app('jarvis_core')
-        self.jarvis.jarvis_register_intent('set_thermostat',
+        self.thermostat = self.args.get('thermostat')
+        self.jarvis.jarvis_register_intent('setThermostat',
                                       self.jarvis_set_thermostat)
 
     def jarvis_set_thermostat(self, data, *args, **kwargs):
@@ -29,6 +30,8 @@ class jarvis_thermostat(hass.Hass):
             data = json.loads(data.get('payload', data))
         #self.log("jarvis_thermostat: intent {}".format(data['intent']), "INFO")
         #self.log("jarvis_thermostat: slots {}".format(data['slots']), "INFO")
+        if not self.thermostat:
+            self.log("__function__: No thermostats configured!", "INFO")
 
         if not data.get('slots'):
             self.log("jarvis_thermostat: no slot information")
@@ -45,18 +48,19 @@ class jarvis_thermostat(hass.Hass):
             thermostat = 'downstairs'
 
         if not slots.get('temperature') and not slots.get('direction'):
-            self.jarvis_notify(None, {'siteId': data.get('siteId', 'default'),
-                                 'text': self.jarvis_speech('sorry')
-                                 + ", I can only do heat or ac"})
+            self.jarvis.jarvis_notify(None, {'siteId': data.get(
+                'siteId', 'default'),
+                'text': self.jarvis.jarvis_get_speech(
+                'not_understood')})
             return
         if slots.get('direction'):
             if slots.get('temperature'):
                 if not 1 <= int(slots['temperature']) < 10:
-                    self.jarvis_notify(None,
-                                {'siteId': data.get('siteId', 'default'),
-                                 'text': self.jarvis_speech('sorry')
-                                 + str(slots['temperature'])
-                                 + ' degrees is too big of a change for me.'})
+                    self.jarvis.jarvis_notify(
+                        {'siteId': data.get('siteId', 'default'),
+                         'text': self.jarvis.jarvis_get_speech('sorry') + ', '
+                         + self.jarvis.jarvis_get_speech(
+                         'too_much_change').format(slots['temperature'])})
                     return
                 else:
                     temperature = int(slots['temperature'])
@@ -65,16 +69,16 @@ class jarvis_thermostat(hass.Hass):
             else:
                 temperature = -2
             cur_temp = self.get_state(
-                entity='climate.'+self.thermostats['heat'][thermostat],
-                attribute='current_temperature')
+                entity='climate.'+self.thermostat['heat'][thermostat],
+                attribute='temperature')
             target_temp = int(cur_temp) + int(temperature)
         elif slots.get('temperature'):
             if not 60 <= int(slots['temperature']) < 91:
-                self.jarvis_notify(None, {'siteId': data.get('siteId', 'default'),
-                                     'text': self.jarvis_speech('sorry')
-                                     + "I cant set the temperature"
-                                     + 'to ' + slots['temperature']
-                                     + ' degrees.'})
+                self.jarvis.jarvis_notify({'siteId':
+                    data.get('siteId', 'default'),
+                    'text': self.jarvis.jarvis_get_speech('sorry') + ', '
+                    + self.jarvis.jarvis_get_speech(
+                    'cant_set_temperature').format(slots['temperature'])})
                 return
             else:
                 target_temp = int(slots['temperature'])
@@ -87,14 +91,14 @@ class jarvis_thermostat(hass.Hass):
                 mode = 'heat'
             self.call_service('climate/set_temperature',
                               entity_id='climate.'
-                                        + self.thermostats[mode][thermostat],
+                                        + self.thermostat[mode][thermostat],
                               temperature=target_temp)
-            self.jarvis_notify(None, {'siteId': data.get('siteId', 'default'),
-                                      'text': self.jarvis_speech('ok')
-                                      + ", setting the "
-                                      + thermostat + ' '
-                                      + mode + ' to ' + str(target_temp)
-                                      + ' degrees'})
+            self.jarvis.jarvis_notify({'siteId':
+                  data.get('siteId', 'default'),
+                  'text': self.jarvis.jarvis_get_speech('ok') + ', '
+                  + self.jarvis.jarvis_get_speech('set_temperature').format(
+                    thermostat, mode, target_temp)})
         else:
-            self.jarvis_notify(None, {'siteId': data.get('siteId', 'default'),
-                                      + 'text':"Sorry, I didnt understand"})
+            self.jarvis.jarvis_notify({'siteId':
+                data.get('siteId', 'default'),
+                + 'text': self.jarvis.jarvis_get_speech('not_understood')})

@@ -4,9 +4,9 @@ import string
 import json
 from fuzzywuzzy import fuzz, process
 
-######################
-# Jarvis Weather Skill
-######################
+#####################
+# Jarvis Lights Skill
+#####################
 
 class jarvis_lights(hass.Hass):
 
