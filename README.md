@@ -33,6 +33,13 @@ should work.
 - Install this app in your apps folder (git clone the repo)
 - Configure it
 
+### Updating
+
+After using git to clone this repository into your appdaemon apps directory, simply cd to the directory and git pull
+
+Use care that you don't overrun any local changes and you may need to manually change config file settings. I will try
+to call out those situations in the CHANGELOG.md
+
 ### Configuration
 
 Edit the jarvis/jarvis.yaml and enable modules and add settings
