@@ -65,7 +65,7 @@ Create your assistant, download it, and unzip to /usr/share/snips (default locat
 
 ### Configure Home Assistant
 
-The general idea is to fire the hotword topic to enabled lowering media player volume (if configured)
+The general idea is to fire the hotword topic to enable lowering media player volume (if configured)
 and all intents to appdaemon to handle.
 
 This does not preclude having additional intents handled directly by Home Assistant and you can disable
