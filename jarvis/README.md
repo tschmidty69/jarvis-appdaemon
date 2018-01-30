@@ -28,18 +28,17 @@ Create your assistant and add these bundles
 #### Snips
 Smart Lights
 Weather
-##### Optional
-Music Player # I prefer mine since I got a lot of false positives from play and pause
+*Music Player* (I prefer mine since I got a lot of false positives from play and pause)
 
 #### AcidFlow
 Timers - En
 
-### TSchmidty
+#### TSchmidty
 TV Controls
-Music Player - If not using the official Snips
+Music Player (If not using the official Snips Bundle)
 Thermostat
 
-Download your assistant and unzip to /usr/share/snips (default location)
+Create your assistant, download it, and unzip to /usr/share/snips (default location)
 
 ### Configure Home Assistant
 
