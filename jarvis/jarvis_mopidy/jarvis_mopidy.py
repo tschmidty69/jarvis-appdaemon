@@ -1,13 +1,8 @@
 import appdaemon.plugins.hass.hassapi as hass
-import ast
-import sys
-import random
 import string
 import json
-import yaml
-import requests
-from pathlib import Path
-import os, re, time
+import subprocess
+from subprocess import Popen, PIPE, STDOUT
 from fuzzywuzzy import fuzz, process
 
 #####################
@@ -87,7 +82,7 @@ class jarvis_mopidy(hass.Hass):
                             + ", I couldn't find any music by "
                             + data['artist']})
 
-    def jarvis_play_playlist(self, data, *args, **kwargs):
+    def jarvis_mopidy_play_playlist(self, data, *args, **kwargs):
         self.log("__function__: {}".format(data), "INFO")
         self.call_service("media_player/shuffle_set",
                           entity_id = 'media_player.mopidy',

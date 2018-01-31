@@ -7,6 +7,7 @@ jarvis_core:
 
   # File containing speech to language mappings
   speech_file: '/data/jarvis_en.yaml'
+  acceptable_probability: .3
 
   # media players
   # these are mapped to siteIds in snips
@@ -31,7 +32,7 @@ jarvis_mopidy:
   class: jarvis_mopidy
   dependencies: jarvis_core
   enabled: True
-  host: 'YOUR_MOPIDY_HOST'
+  mopidy_host: 'YOUR_MOPIDY_HOST'
 
 
 jarvis_lights:
@@ -42,7 +43,7 @@ jarvis_lights:
   lights:
     christmas: group.living_room_lights
     living_room: group.living_room_lights
-    driveway: switch.switch1
+    driveway: switch.ge_driveway_lights_switch
     upstairs: switch.switch2
 
 jarvis_timer:
@@ -68,11 +69,16 @@ jarvis_tv:
   module: jarvis_tv
   class: jarvis_tv
   dependencies: jarvis_core
-  enabled: False
+  enabled: True
+  tv_file: '/data/tv.yaml'
+  default_tv: living_room
   tv:
-    roku:
-      living_room: 'ip_of_roku_1'
-      master_bedroom: 'ip_of_roku_2'
+    living_room:
+      power_switch: switch.panasonic_tv_power
+      roku: 'ip_of_roku_1'
+    master_bedroom:
+      power_switch:
+      roku: 'ip_of_roku_2'
 
 jarvis_ask_wolfram:
   module: jarvis_ask_wolfram
