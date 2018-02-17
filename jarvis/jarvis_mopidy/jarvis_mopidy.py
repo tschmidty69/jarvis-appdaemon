@@ -14,8 +14,8 @@ class jarvis_mopidy(hass.Hass):
     def initialize(self):
         if not self.args.get('enabled'):
             return
-        self.jarvis = self.get_app("jarvis_core")
-        self.mopidy = self.args.get('mopidy_host')
+        self.jarvis = self.get_app('jarvis_core')
+        self.mopidy_host = self.args.get('mopidy_host')
         self.jarvis.jarvis_register_intent('playAlbum',
                                       self.jarvis_mopidy_play_album)
         self.jarvis.jarvis_register_intent('playArtist',
@@ -34,7 +34,7 @@ class jarvis_mopidy(hass.Hass):
                                       self.jarvis_mopidy_next_song)
         self.jarvis.jarvis_register_intent('previousSong',
                                       self.jarvis_mopidy_previous_song)
-        self.jarvis.jarvis_register_intent('pauseMusic',
+        self.jarvis.jarvis_register_intent('playMusic',
                                       self.jarvis_mopidy_play_music)
         self.jarvis.jarvis_register_intent('pauseMusic',
                                       self.jarvis_mopidy_pause_music)
@@ -128,14 +128,15 @@ class jarvis_mopidy(hass.Hass):
                 + " playing playlist "
                 + clean_playlist})
         else:
-            self.jarvis_notify({'text':
+            #TODO
+            self.jarvis.jarvis_notify({'text':
                 self.jarvis.jarvis_get_speech('sorry')
                 + ", I couldn't get any playlist matching "
                 + data['playlist']})
 
     def jarvis_mopidy_play_song(self, data, *args, **kwargs):
         self.log("jarvis_song: {}".format(data), 'DEBUG')
-        if not data['artist'] and not data['title']:
+        if not data.get('artist') and not data.get('title'):
             return
         mpc_search=subprocess.check_output(["/usr/bin/mpc", "-h", self.mopidy_host,
                     "search", "artist", data['artist'], "title", data['title']],
@@ -167,7 +168,8 @@ class jarvis_mopidy(hass.Hass):
                 self.jarvis.jarvis_get_speech('ok')
                 + ", playing "+song+" by "+data['artist']})
         else:
-            self.jarvis_notify({'text':
+            #TODO
+            self.jarvis.jarvis_notify({'text':
                 self.jarvis.jarvis_get_speech('sorry')
                 + ", I couldn't find any music by "
                 + data['artist']})
@@ -186,16 +188,33 @@ class jarvis_mopidy(hass.Hass):
 
     def jarvis_mopidy_next_song(self, data, *args, **kwargs):
         self.log("__function__: {}".format(data), "INFO")
-        self.jarvis.not_implemented()
+        self.call_service("media_player/media_next_track",
+                          entity_id = 'media_player.mopidy')
+        self.jarvis.jarvis_end_session(
+            {'sessionId': data.get('sessionId', ''),
+             'text': self.jarvis.jarvis_get_speech('ok')})
 
     def jarvis_mopidy_previous_song(self, data, *args, **kwargs):
         self.log("__function__: {}".format(data), "INFO")
         self.jarvis.not_implemented()
+        self.call_service("media_player/media_previous_track",
+                          entity_id = 'media_player.mopidy')
+        self.jarvis.jarvis_end_session(
+            {'sessionId': data.get('sessionId', ''),
+             'text': self.jarvis.jarvis_get_speech('ok')})
 
     def jarvis_mopidy_play_music(self, data, *args, **kwargs):
         self.log("__function__: {}".format(data), "INFO")
-        self.jarvis.not_implemented()
+        self.call_service("media_player/media_play",
+                          entity_id = 'media_player.mopidy')
+        self.jarvis.jarvis_end_session(
+            {'sessionId': data.get('sessionId', ''),
+             'text': self.jarvis.jarvis_get_speech('ok')})
 
     def jarvis_mopidy_pause_music(self, data, *args, **kwargs):
         self.log("__function__: {}".format(data), "INFO")
-        self.jarvis.not_implemented()
+        self.call_service("media_player/media_pause",
+                          entity_id = 'media_player.mopidy')
+        self.jarvis.jarvis_end_session(
+            {'sessionId': data.get('sessionId', ''),
+             'text': self.jarvis.jarvis_get_speech('ok')})

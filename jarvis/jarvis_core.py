@@ -28,8 +28,12 @@ class jarvis_core(hass.Hass):
 
         self.sessionId = ''
         self.siteId = 'default'
+        self.intents_enabled = True
 
         self.global_vars['intents'] = {}
+        self.global_vars['dialogue_callback'] = {}
+        self.global_vars['dialogue_listener_callback'] = {}
+        self.global_vars['dialogue_enabled'] = {}
 
         self.speech_file = (os.path.join(os.path.dirname(__file__)) + '/'
                                + self.args.get('speech_file',
@@ -44,24 +48,63 @@ class jarvis_core(hass.Hass):
             self.volume[player] = self.get_state(entity=player,
                                                  attribute='volume_level')
 
-        self.listen_event(self.jarvis_event_listener, 'JARVIS_MQTT')
+        self.listen_event(self.event_listener, 'JARVIS_MQTT')
         self.listen_event(self.jarvis_notify, "JARVIS_NOTIFY")
         self.listen_event(self.jarvis_action, "JARVIS_ACTION")
 
         self.listen_event(self.jarvis_intent_not_recognized,
                           'JARVIS_INTENT_NOT_RECOGNIZED')
+        self.jarvis_register_intent('YesNoResponse',
+                                    self.jarvis_yes_no_response)
 
     def jarvis_register_intent(self, intent, callback):
         self.log("__function__: %s" % intent, 'INFO')
         self.global_vars['intents'][intent] = callback
 
-    def jarvis_event_listener(self, event_name, data, *args, **kwargs):
+    def register_dialogue_callback(self, site_id, callback):
+        self.log("__function__: %s" % site_id, 'INFO')
+        self.global_vars['dialogue_callback'][site_id] = callback
+
+    def register_dialogue_listener_callback(self, site_id, callback):
+        self.log("__function__: %s" % site_id, 'INFO')
+        self.global_vars['dialogue_listener_callback'][site_id] = callback
+
+    def enable_intents(self, state=True):
+        self.log("__function__: %s" % state, 'INFO')
+        self.intents_enabled = state
+
+    def event_listener(self, event_name, data, *args, **kwargs):
         self.log("__function__: %s" % data, 'INFO')
+        payload = json.loads(data['payload']) if data.get('payload') else {}
+
+        site_id = payload.get('siteId', self.siteId)
+
+        # If dialogue is enabled, we are waiting for tts to finish here
+        if self.global_vars['dialogue_enabled'].get(site_id):
+            self.log("__function__: dialogue_enabled for site %s" % site_id, 'INFO')
+            # audio done playing, now call to set up listening
+            if 'hermes/audioServer/'+site_id+'/playFinished' in data.get('topic'):
+                self.log("__function__: %s" % self.global_vars['dialogue_listener_callback'].get(site_id), 'INFO')
+
+                if self.global_vars['dialogue_listener_callback'].get(site_id):
+                    self.log("__function__: dialogue_listener_callback %s" % payload, 'INFO')
+                    self.global_vars['dialogue_listener_callback'][site_id](payload)
+
+            # got our answer, send it to callback
+            if 'hermes/asr/textCaptured' in data.get('topic', ''):
+                self.log("__function__: dialogue_callback %s" % site_id, 'INFO')
+                if self.global_vars['dialogue_callback'].get(site_id):
+                    self.log("__function__: dialogue_callback %s" % payload, 'INFO')
+                    self.global_vars['dialogue_callback'][site_id](payload)
 
         if 'hermes/hotword/' in data.get('topic', ''):
             hotword_data = {'toggle': data['topic'].split('toggle')[-1],
                             'payload': data.get('payload')}
-            self.jarvis_listening(hotword_data)
+            self.listening(hotword_data)
+
+        if not self.intents_enabled:
+            self.log("__function__: not listening for intents")
+            return
 
         if 'hermes/intent/' in data.get('topic', ''):
             if data.get('payload'):
@@ -71,10 +114,10 @@ class jarvis_core(hass.Hass):
             else:
                 intent = data['intent']['intentName'].split(':')[-1]
             self.log("__function__ intent received: %s" % intent, 'INFO')
-            if data['intent']['probability'] < self.acceptable_probability:
+            if data['intent'].get('probability', 0) < self.acceptable_probability:
                 self.log("__function__ intent probability "
                          "too low, dropping: %s" %
-                         data['intent']['probability'], 'INFO')
+                         data['intent'].get('probability', 0), 'INFO')
             if self.global_vars['intents'].get(intent):
                 self.global_vars['intents'][intent](data)
 
@@ -126,7 +169,7 @@ class jarvis_core(hass.Hass):
                        hostname=self.snips_mqtt_host,
                        port=self.snips_mqtt_port )
 
-    def jarvis_yesno_response(self, data, *args, **kwargs):
+    def jarvis_yes_no_response(self, data, *args, **kwargs):
         """Custom handler for specific Yes/No Intent.
            This pulls information from the customData
            To fire an intent."""
@@ -146,8 +189,7 @@ class jarvis_core(hass.Hass):
             publish.single('hermes/intent/'+intent_data.get('intent', ''),
                            payload=json.dumps(payload),
                            hostname=self.snips_mqtt_host,
-                           port=self.snips_mqtt_port,
-                           protocol=mqtt.MQTTv311
+                           port=self.snips_mqtt_port
             )
         else:
             self.jarvis_notify('NONE', {"text": self.jarvis_speech('ok')})
@@ -162,11 +204,10 @@ class jarvis_core(hass.Hass):
         publish.single('hermes/dialogueManager/startSession',
           payload=json.dumps(payload),
           hostname=self.snips_mqtt_host,
-          port=self.snips_mqtt_port,
-          protocol=mqtt.MQTTv311
+          port=self.snips_mqtt_port
         )
 
-    def jarvis_listening(self, data, *args, **kwargs):
+    def listening(self, data, *args, **kwargs):
         self.log("__function__: %s" % data, 'DEBUG')
         if not self.args.get('ramp_volume_on_hotword'):
             self.log("__function__: ramp_volume_on_hotword disabled", 'INFO')
@@ -180,15 +221,15 @@ class jarvis_core(hass.Hass):
                                           attribute="is_volume_muted"):
                         self.volume[player] = self.get_state(
                             entity=player, attribute='volume_level')
-                        self.jarvis_ramp_volume(player,
+                        self.ramp_volume(player,
                             self.volume[player], 0.2)
                 if data.get('toggle') == 'On':
                     if not self.get_state(entity=player,
                                           attribute="is_volume_muted"):
-                        self.jarvis_ramp_volume(player, 0.2,
+                        self.ramp_volume(player, 0.2,
                                                 self.volume[player])
 
-    def jarvis_ramp_volume(self, player, volume, dst_vol, *args, **kwargs):
+    def ramp_volume(self, player, volume, dst_vol, *args, **kwargs):
         self.log("__function__: %s %s %s" % (player, volume, dst_vol),
             'DEBUG')
         if self.get_state(player) == 'off':
@@ -208,9 +249,9 @@ class jarvis_core(hass.Hass):
               entity_id = player,
               volume_level = str(volume - step * count))
 
-    def jarvis_not_implemented(self, data, *args, **kwargs):
+    def not_implemented(self, data, *args, **kwargs):
         self.log("__function__: %s" %data, 'INFO')
-        if self.arg.get('speech_on_not_implemented'):
+        if self.args.get('speech_on_not_implemented'):
             self.jarvis_notify('NONE', {'text':
                 self.jarvis_get_speech('sorry') + ', '
                 + self.jarvis_get_speech('cant_do_yet')})
