@@ -4,8 +4,6 @@ appdaemon:
   logsize: 100000
   log_generations: 3
   threads: 10
-  api_port: 5000
-  api_key: !secret api_key
   plugins:
     HASS:
       type: hass
