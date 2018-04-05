@@ -5,6 +5,7 @@ the folks at [The Magic Door](https://www.themagicdoor.org)
 
 ### INSTALL
 
+```
 sudo apt-get -y install python3-pip python3-venv curl mpg321
 
 sudo python3 -m venv /srv/jarvis
@@ -15,7 +16,9 @@ pip3 install appdaemon
 pip3 install paho-mqtt
 
 cd /srv/jarvis
-wget
+wget https://github.com/tschmidty69/jarvis-appdaemon/releases/download/0.1/jarvis_magic_door.tgz
+tar zxvfp jarvis_magic_door.tgz
+```
 
 ### Running
 
