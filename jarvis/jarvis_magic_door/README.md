@@ -5,6 +5,8 @@ the folks at [The Magic Door](https://www.themagicdoor.org)
 
 ### INSTALL
 
+Assumes you are running this on a raspberry pi with a pi user. Adapt
+install instructions if needed.
 ```
 sudo apt-get -y install python3-pip python3-venv curl mpg321
 
