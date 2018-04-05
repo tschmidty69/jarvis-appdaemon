@@ -5,8 +5,8 @@ the folks at [The Magic Door](https://www.themagicdoor.org)
 
 ### INSTALL
 
-Assumes you are running this on a raspberry pi with a pi user. Adapt
-install instructions if needed.
+Assumes you are running this on a raspberry pi with a pi user and snips
+installed on the same pi. Adapt install instructions if needed.
 ```
 sudo apt-get -y install python3-pip python3-venv curl mpg321
 
@@ -41,7 +41,7 @@ ctrl-c and all the endless debug messages.
 
 ## Playing
 
-Add the 'The Magic Door' bundle to you Snips assistant and follow the normal
+Add the 'The Magic Door' bundle to your Snips assistant and follow the normal
 steps to update your Snips install.
 
 If you want to keep persistent game sessions, set a unique username in the
