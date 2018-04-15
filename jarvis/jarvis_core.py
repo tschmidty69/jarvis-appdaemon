@@ -120,6 +120,7 @@ class jarvis_core(hass.Hass):
                 self.log("__function__ intent probability "
                          "too low, should drop: %s" %
                          data['intent'].get('probability', 0), 'INFO')
+                return
             if self.global_vars['intents'].get(intent):
                 self.global_vars['intents'][intent](data)
             else:

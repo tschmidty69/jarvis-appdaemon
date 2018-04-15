@@ -2,6 +2,7 @@ jarvis_core:
   module: jarvis_core
   class: jarvis_core
   # core
+  # This is used for some direct messaging and not required
   snips_mqtt_host: 'YOUR_SNIPS_MQTT_IP'
   snips_mqtt_port: 1883
 
@@ -17,72 +18,7 @@ jarvis_core:
     default: media_player.media_player
     bonus: media_player.media_player
     remote: media_player.media_player
-  speech_on_not_implemented: true
 
-# specific apps
+  # Send a response when 
+  speech_on_not_implemented: false
 
-jarvis_weather:
-  module: jarvis_weather
-  class: jarvis_weather
-  dependencies: jarvis_core
-  enabled: False
-
-jarvis_mopidy:
-  module: jarvis_mopidy
-  class: jarvis_mopidy
-  dependencies: jarvis_core
-  enabled: True
-  mopidy_host: 'YOUR_MOPIDY_HOST'
-
-
-jarvis_lights:
-  module: jarvis_lights
-  class: jarvis_lights
-  dependencies: jarvis_core
-  enabled: True
-  lights:
-    christmas: group.living_room_lights
-    living_room: group.living_room_lights
-    driveway: switch.ge_driveway_lights_switch
-    upstairs: switch.switch2
-
-jarvis_timer:
-  module: jarvis_timer
-  class: jarvis_timer
-  dependencies: jarvis_core
-  enabled: True
-
-jarvis_thermostat:
-  module: jarvis_thermostat
-  class: jarvis_thermostat
-  dependencies: jarvis_core
-  enabled: True
-  thermostat:
-    heat:
-      downstairs: thermostat_1
-      upstairs: thermostat_1_2
-    ac:
-      downstairs: thermostat_1
-      upstairs: thermostat_1_2
-
-jarvis_tv:
-  module: jarvis_tv
-  class: jarvis_tv
-  dependencies: jarvis_core
-  enabled: True
-  tv_file: '/data/tv.yaml'
-  default_tv: living_room
-  tv:
-    living_room:
-      power_switch: switch.panasonic_tv_power
-      roku: 'ip_of_roku_1'
-    master_bedroom:
-      power_switch:
-      roku: 'ip_of_roku_2'
-
-jarvis_ask_wolfram:
-  module: jarvis_ask_wolfram
-  class: jarvis_ask_wolfram
-  dependencies: jarvis_core
-  enabled: False
-  api_key: 'secret'
